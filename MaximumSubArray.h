@@ -16,12 +16,11 @@ typedef struct idxAndSum
 }idxAndSum;
 
 
-
-
-
 // Funtions
-void printResult(idxAndSum*, int*, int);
+void printResult(idxAndSum*, idxAndSum*, int*, int);
 int* makeRandArray(int);
 idxAndSum* BruteWayFunc(int*, int);
 void testInterface();
-
+void FindMaxCrossingSubarray(int*, int, int, int, int*, int*, int*);
+void FindMaximumSum(int*, int, int, int*, int*, int*);
+void copyArray(int*, int*, int);
