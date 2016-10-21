@@ -12,27 +12,7 @@
 int main(void)
 {
 	Heap testHeap;
-
-	while (testHeap.MakeSampleHeap() != -1)
-	{
-		cout << "초기 생성 배열";
-		testHeap.PrintHeap();
-
-		testHeap.BuildMaxHeap();
-		cout << "Heap 변환후 ";
-		testHeap.PrintHeap();
-		cout << "MaxHeap이 맞나요? : ";
-		if (testHeap.IsMaxHeap())
-		{
-			cout << "Yes!";
-		}
-		else
-		{
-			cout << "No!";
-		}
-
-		cout << endl;
-	}
+	testHeap.TestHeapify();
 
 	return 0;
 }
@@ -195,7 +175,7 @@ void Heap::MaxHeapify(int rootIdx)
 	IsMaxHeap
 	element 배열을 돌며 힙이라면 1을, 아니라면 0을 반환하는 간단한 함수.
 	인터널 노드의 끝 인덱스를 구한 뒤, 그 직전까지 leftChild, rightChild를 root와 비교하여 MaxHeap여부를 확인한다.
-	인터널 노드의 끝은 rightChild가 있을지 없을지 알 수 없으므로 존재 여부를 확인한 뒤 비교한다.
+	인터널 노드의 끝 노드는 rightChild가 있을지 없을지 알 수 없으므로 존재 여부를 확인한 뒤 비교한다.
 */
 
 int Heap::IsMaxHeap()
@@ -244,3 +224,65 @@ int Heap::IsMaxHeap()
 }
 
 
+/*
+	TestHeapify
+	힙과 관련한 여러 함수들을 테스트 해보기 위해 구조를 잡는 일종의 인터페이스 함수.
+*/
+
+void Heap::TestHeapify()
+{
+	while (this->MakeSampleHeap() != -1)
+	{
+		cout << "초기 생성 배열";
+		PrintHeap();
+
+		BuildMaxHeap();
+		cout << "MaxHeap 변환후 ";
+		PrintHeap();
+		cout << "MaxHeap이 맞나요? : ";
+		if (IsMaxHeap())
+		{
+			cout << "Yes!";
+		}
+		else
+		{
+			cout << "No!";
+		}
+		HeapSort();
+		cout << endl << "Sorting 후 ";
+		PrintHeap();
+		
+		cout << endl << endl;
+	}
+
+	return;
+}
+
+
+/*
+	HeapSort
+	MaxHeap상태의 Heap을 소팅하는 함수.
+
+	for (배열의 맨 끝부터 2까지)
+		1. MaxHeap의 최대값 (root노드)를 맨 뒤 노드와 바꿔준다.
+		2. 멤버 변수 size의 값을 1 감소 시킨다.
+		3. 최대값을 제외한 element들을 Heapify한다.
+*/
+
+void Heap::HeapSort()
+{
+	int preserveSize = size;
+	int tmp;
+
+	for (int i = preserveSize; i >= 2; --i)
+	{
+		tmp = element[1];
+		element[1] = element[i];
+		element[i] = tmp;
+		--size;
+		MaxHeapify(1);
+	}
+
+	size = preserveSize;
+	return;
+}
