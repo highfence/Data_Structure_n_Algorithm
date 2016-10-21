@@ -21,6 +21,15 @@ int main(void)
 		testHeap.BuildMaxHeap();
 		cout << "Heap 변환후 ";
 		testHeap.PrintHeap();
+		cout << "MaxHeap이 맞나요? : ";
+		if (testHeap.IsMaxHeap())
+		{
+			cout << "Yes!";
+		}
+		else
+		{
+			cout << "No!";
+		}
 
 		cout << endl;
 	}
@@ -185,9 +194,53 @@ void Heap::MaxHeapify(int rootIdx)
 /*
 	IsMaxHeap
 	element 배열을 돌며 힙이라면 1을, 아니라면 0을 반환하는 간단한 함수.
+	인터널 노드의 끝 인덱스를 구한 뒤, 그 직전까지 leftChild, rightChild를 root와 비교하여 MaxHeap여부를 확인한다.
+	인터널 노드의 끝은 rightChild가 있을지 없을지 알 수 없으므로 존재 여부를 확인한 뒤 비교한다.
 */
 
 int Heap::IsMaxHeap()
 {
+	int endOfInternalNode = size / 2;
+	int leftChild;
+	int rightChild;
+
+	// Exception Handling
+	if (size <= 1)
+	{
+		return 1;
+	}
+
+	for (int i = 1; i < endOfInternalNode; ++i)
+	{
+		leftChild = i * 2;
+		rightChild = i * 2 + 1;
+
+		if (element[leftChild] > element[i])
+		{
+			return 0;
+		}
+		else if (element[rightChild] > element[i])
+		{
+			return 0;
+		}
+	}
+
+	leftChild = endOfInternalNode * 2;
+	
+	if (element[leftChild] > element[endOfInternalNode])
+	{
+		return 0;
+	}
+	if (size >= endOfInternalNode * 2 + 1)
+	{
+		rightChild = endOfInternalNode * 2 + 1;
+		if (element[rightChild] > element[endOfInternalNode])
+		{
+			return 0;
+		}
+	}
+
 	return 1;
 }
+
+

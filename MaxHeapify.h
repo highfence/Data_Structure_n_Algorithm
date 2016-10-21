@@ -20,6 +20,6 @@ public:
 	void PrintHeap();
 	void MaxHeapify(int);
 	void BuildMaxHeap();
-
 	int IsMaxHeap();
+	void test_hepify();
 };
