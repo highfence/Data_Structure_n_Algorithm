@@ -12,12 +12,15 @@
 int main(void)
 {
 	Heap testHeap;
-	
+
 	while (testHeap.MakeSampleHeap() != -1)
 	{
 		cout << "초기 생성 배열";
 		testHeap.PrintHeap();
 
+		testHeap.BuildMaxHeap();
+		cout << "Heap 변환후 ";
+		testHeap.PrintHeap();
 
 		cout << endl;
 	}
@@ -84,9 +87,25 @@ int Heap::MakeSampleHeap()
 
 /*
 	BuildMaxHeap
-	랜덤하게 배치되어있는 배열을 MaxHeapify함수를 이용하여 MaxHeap으로 바꾸어 주는 함수.
+	랜덤하게 배치되어있는 배열을 MaxHeapify함수를 이용하여 MaxHeap으로 바꾸어 주는 함수. O(N)
 
+	1. 리프노드가 아닌 노드(Internal Node) 중 배열의 가장 뒤에 있는 노드를 찾는다. ( size / 2 의 인덱스 )
+	2. 가장 뒤에 있는 노드부터 루트노드까지 돌며 MaxHeapify를 수행한다.
 */
+
+
+void Heap::BuildMaxHeap()
+{
+	int lastInternalNode;
+
+	lastInternalNode = size / 2;
+
+	for (int i = lastInternalNode; i >= 1; --i)
+	{
+		MaxHeapify(i);
+	}
+	return;
+}
 
 
 /*
@@ -118,31 +137,30 @@ void Heap::MaxHeapify(int rootIdx)
 	if (size >= rootIdx * 2)
 	{
 		leftChild = rootIdx * 2;
+
+		if (element[leftChild] > element[rootIdx])
+		{
+			largestIdx = leftChild;
+		}
+		else
+		{
+			largestIdx = rootIdx;
+		}
 	}
 	if (size >= rootIdx * 2 + 1)
 	{
 		rightChild = rootIdx * 2 + 1;
+
+		if (element[rightChild] > element[largestIdx])
+		{
+			largestIdx = rightChild;
+		}
 	}
 
 	// 리프노드라면 함수를 종료한다.
 	if (!leftChild && !rightChild)
 	{
 		return;
-	}
-
-	// leftChild와 rightChild, root의 비교. 
-	if (element[leftChild] > element[rootIdx])
-	{
-		largestIdx = leftChild;
-	}
-	else
-	{
-		largestIdx = rootIdx;
-	}
-
-	if (element[rightChild] > element[largestIdx])
-	{
-		largestIdx = rightChild;
 	}
 
 	// 만약 루트가 가장 크다면, 함수를 종료. (이미 MaxHeapify)
@@ -161,4 +179,15 @@ void Heap::MaxHeapify(int rootIdx)
 
 	return;
 
+}
+
+
+/*
+	IsMaxHeap
+	element 배열을 돌며 힙이라면 1을, 아니라면 0을 반환하는 간단한 함수.
+*/
+
+int Heap::IsMaxHeap()
+{
+	return 1;
 }
