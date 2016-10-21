@@ -6,7 +6,7 @@
 using namespace std;
 
 const int HEAP_MAX_ELEMENT = 255;
-const int FIRST_ARRAY_VAL = INT_MIN;
+const int INIT_MIN_VAL = INT_MIN;
 const int RANDOM_VAL_RANGE = 100;
 
 class Heap
@@ -24,4 +24,6 @@ public:
 	void TestHeapify();
 	void HeapSort();
 	int ExtractMax();
+	void HeapIncreaseKey(int, int);
+	void MaxHeapInsert();
 };

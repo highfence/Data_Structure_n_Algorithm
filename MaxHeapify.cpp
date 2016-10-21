@@ -21,7 +21,7 @@ int main(void)
 Heap::Heap()
 {
 	size = 0;
-	element[0] = { FIRST_ARRAY_VAL };
+	element[0] = { INIT_MIN_VAL };
 }
 
 
@@ -263,6 +263,10 @@ void Heap::TestHeapify()
 		cout << "최대값 제거 후 MaxHeap ";
 		PrintHeap();
 
+		// MaxHeapInsert
+		cout << "랜덤 값 삽입 : ";
+		MaxHeapInsert();
+		PrintHeap();
 		cout << endl << endl;
 	}
 
@@ -310,6 +314,11 @@ void Heap::HeapSort()
 
 int Heap::ExtractMax()
 {
+	if (!size)
+	{
+		return 0;
+	}
+
 	int returnVal = element[1];
 	
 	element[1] = element[size];
@@ -318,4 +327,69 @@ int Heap::ExtractMax()
 	MaxHeapify(1);
 
 	return returnVal;
+}
+
+/*
+	HeapIncreaseKey
+	element의 어떤 노드의 값을 증가시키는 함수. 증가가 끝난 뒤에도 MaxHeap이 유지되어야 한다.
+	입력으로 인덱스 값과 key값을 받는다.
+	
+	1. 만약 입력받은 인덱스 값이 key값 보다 크다면, 함수를 종료한다.
+	2. 정상적인 값이 들어왔다면, 인덱스 값에 key값을 저장한다.
+
+	3. 인덱스의 parent를 구한다.
+	
+	while (인덱스가 MaxHeap일 때까지)
+		4. 인덱스와 parent를 교환한다.
+*/
+
+void Heap::HeapIncreaseKey(int idx, int key)
+{
+	// Exception Handling
+	if (element[idx] > key)
+	{
+		return;
+	}
+
+	element[idx] = key;
+	int parent = idx / 2;
+	int currentIdx = idx;
+
+	// 인덱스를 포함하지 않은 다른 한 Subtree는 이미 MaxHeap조건에 부합하므로, parent의 값이 인덱스 값보다 크다면 MaxHeap조건 만족.
+	// 혹은 인덱스 값이 원소 중 가장 커서 root가 되었을 경우 조건을 만족.
+	while ((currentIdx > 1) && (element[parent] < element[currentIdx]))
+	{
+		int tmp = element[currentIdx];
+		element[currentIdx] = element[parent];
+		element[parent] = tmp;
+		
+		currentIdx = parent;
+		parent /= 2;
+	}
+
+	return;
+}
+
+
+/*
+	MaxHeapInsert
+	완성되어 있는 MaxHeap에 하나의 값을 추가시키는 함수. 값이 추가된 후에도 MaxHeap은 유지되어야 한다.
+	HeapIncreaseKey 함수를 이용하여 구현.  
+	
+	1. Heap의 Size를 하나 증가시킨다.
+	2. 그 자리에 INT_MIN값을 집어넣는다. (HeapIncreaseKey가 무조건 작동하게 함)
+	3. 삽입하고자 하는 값과 증가시킨 인덱스의 사이즈를 HeapIncreaseKey에 집어넣는다.
+	( 테스트의 편의성을 위해 랜덤값을 집어넣는다. )
+*/
+
+void Heap::MaxHeapInsert()
+{
+
+	element[++size] = INIT_MIN_VAL;
+	int inputVal = rand() % RANDOM_VAL_RANGE;
+
+	cout << inputVal;
+	HeapIncreaseKey(size, inputVal);
+
+	return;
 }
