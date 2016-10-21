@@ -233,9 +233,11 @@ void Heap::TestHeapify()
 {
 	while (this->MakeSampleHeap() != -1)
 	{
+		// 배열 초기 생성
 		cout << "초기 생성 배열";
 		PrintHeap();
 
+		// MaxHeap 변환
 		BuildMaxHeap();
 		cout << "MaxHeap 변환후 ";
 		PrintHeap();
@@ -248,10 +250,19 @@ void Heap::TestHeapify()
 		{
 			cout << "No!";
 		}
+
+		// HeapSort
 		HeapSort();
 		cout << endl << "Sorting 후 ";
 		PrintHeap();
 		
+		// ExtractMax
+		MaxHeapify(1);
+		int maxVal = ExtractMax();
+		cout << "최대값 :" << maxVal << endl;
+		cout << "최대값 제거 후 MaxHeap ";
+		PrintHeap();
+
 		cout << endl << endl;
 	}
 
@@ -285,4 +296,26 @@ void Heap::HeapSort()
 
 	size = preserveSize;
 	return;
+}
+
+/*
+	ExtractMax
+	MaxHeap에서 최대값을 빼내어 반환한다. 반환 이후에도 배열은 MaxHeap을 유지해야한다.
+
+	1. MaxHeap 상태에서 최대값은 element[1]이므로 이를 우선 반환 값으로 저장한다.
+	2. 최대값을 element의 마지막 원소와 바꾸어준다.
+	3. 사이즈를 하나 줄여 최대값을 배열에서 없앤다.
+	4. 그 이후 root노드에 대하여 MaxHeapify 함수를 실행한다.
+*/
+
+int Heap::ExtractMax()
+{
+	int returnVal = element[1];
+	
+	element[1] = element[size];
+	element[size--] = returnVal;
+
+	MaxHeapify(1);
+
+	return returnVal;
 }

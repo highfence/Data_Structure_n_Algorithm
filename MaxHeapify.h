@@ -23,4 +23,5 @@ public:
 	int IsMaxHeap();
 	void TestHeapify();
 	void HeapSort();
+	int ExtractMax();
 };
