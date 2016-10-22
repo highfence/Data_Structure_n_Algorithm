@@ -23,6 +23,11 @@ public :
 	int Partition(int, int);
 	bool IsPartitionRight(int);
 	void TestPartition(int);
+
 	void MakeAscendingArr();
 	void MakeDescendingArr();
+
+	void QuickSort(int, int);
+	void TestQuickSort(int);
+	bool IsSortRight();
 };

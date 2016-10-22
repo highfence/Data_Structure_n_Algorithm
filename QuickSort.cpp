@@ -11,18 +11,47 @@ int main(void)
 {
 	testArr test;
 
-	for (int i = 1; i <= 32; ++i)
+	int mode;
+
+	cout << "Partition 테스트 -> 1" << endl;
+	cout << "QuickSort 테스트 -> 2" << endl;
+	cout << "종료 -> 0 입력 :";
+	cin >> mode;
+	cout << endl;
+
+	if (mode == 1)
 	{
+		for (int i = 1; i <= 32; ++i)
+		{
+			test.MakeRandomArray(i);
+			test.TestPartition(i);
+		}
 
-		test.MakeRandomArray(i);
-		test.TestPartition(i);
+		cout << "오름차순 ";
+		test.MakeAscendingArr();
+		test.TestPartition(MAKING_ELEMENT_COUNT);
+
+		cout << "내림차순 ";
+		test.MakeDescendingArr();
+		test.TestPartition(MAKING_ELEMENT_COUNT);
 	}
+	else if (mode == 2)
+	{
+		for (int i = 1; i <= 16; ++i)
+		{
+			test.MakeRandomArray(i);
+			test.TestQuickSort(i);
+		}
 
-	test.MakeAscendingArr();
-	test.TestPartition(MAKING_ELEMENT_COUNT);
+		cout << "오름차순 ";
+		test.MakeAscendingArr();
+		test.TestQuickSort(MAKING_ELEMENT_COUNT);
 
-	test.MakeDescendingArr();
-	test.TestPartition(MAKING_ELEMENT_COUNT);
+		cout << "내림차순 ";
+		test.MakeDescendingArr();
+		test.TestQuickSort(MAKING_ELEMENT_COUNT);
+
+	}
 
 	return 0;
 }
@@ -157,7 +186,6 @@ bool testArr::IsPartitionRight(int pivotIdx)
 /*
 	TestPartition
 	파티션 기능을 테스트하기 위하여 만든 간단한 함수.
-	QuickSort 기능도 여기서 테스트.
 */
 
 void testArr::TestPartition(int elementVal)
@@ -223,4 +251,82 @@ void testArr::MakeDescendingArr()
 	size = MAKING_ELEMENT_COUNT;
 
 	return;
+}
+
+
+/*
+	QuickSort
+	Partition 함수를 이용하여 재귀적으로 빠른 시간에 소팅을 수행하는 함수.
+
+	1. QuickSort는 소팅할 범위 start와 end를 받는다.
+	
+	if (start가 end보다 작을 때만 작동)
+		2. 배열에 파티션을 수행한 뒤, 그 pivot값을 받는다.
+		3. pivot값을 중심으로 전 후로 나뉘어 QuickSort를 재귀 호출 한다.
+*/
+
+void testArr::QuickSort(int start, int end)
+{
+	if (start < end)
+	{
+		int mid = Partition(start, end);
+		QuickSort(start, mid - 1);
+		QuickSort(mid + 1, end);
+	}
+
+	return;
+}
+
+
+
+/*
+	TestQuickSort
+	Quick기능을 테스트하기 위해 간단히 만든 함수.
+*/
+
+void testArr::TestQuickSort(int elementVal)
+{
+	cout << "원소 개수 " << size;
+	PrintArray();
+
+	// 맨 뒤 원소를 기준으로 Partition
+	QuickSort(0, size - 1);
+	cout << "소팅 후 ";
+	PrintArray();
+
+	// IsPartitionRight?
+	cout << "IsSortRight? : ";
+	bool judgeVal = IsSortRight();
+
+	if (judgeVal)
+	{
+		cout << "Yes!" << endl;
+	}
+	else
+	{
+		cout << "No..." << endl;
+	}
+
+	cout << endl;
+
+	return;
+}
+
+
+/*
+	IsSortRight
+	소팅이 잘 되었는지 확인하는 간단한 함수.
+*/
+
+bool testArr::IsSortRight()
+{
+	for (int i = 0; i < size - 1; ++i)
+	{
+		if (arr[i] > arr[i + 1])
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
