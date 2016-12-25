@@ -5,6 +5,8 @@
 	Edited By MS visual Studio 2015
 */
 
+#ifdef MaxHeapify
+
 #include "MaxHeapify.h"
 
 
@@ -393,3 +395,6 @@ void Heap::MaxHeapInsert()
 
 	return;
 }
+
+
+#endif

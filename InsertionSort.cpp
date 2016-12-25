@@ -5,6 +5,8 @@
 	Edited by MS Visual Studio 2015.
 */
 
+#ifdef InsertionSort
+
 #include "InsertionSort.h"
 
 int main(void)
@@ -115,3 +117,5 @@ void TestSorting(int* arr, int length)
 	cout << endl;
 	return;
 }
+
+#endif

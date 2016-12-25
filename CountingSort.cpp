@@ -5,6 +5,8 @@
 	Edited By MS Visual Studio 2015
 */
 
+#ifdef CountingSort
+
 #include "CountingSort.h"
 
 
@@ -171,3 +173,5 @@ void Test::PrintAll()
 
 	return;
 }
+
+#endif

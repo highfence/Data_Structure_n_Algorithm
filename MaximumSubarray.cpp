@@ -4,6 +4,7 @@
 	내용 : MaximumSubArray를 두 가지 방법으로 구현하고 테스트해보기.
 	Edited by MS Visual Studio 2015.
 */
+#ifdef MaximumSubArray
 
 #include "MaximumSubArray.h"
 
@@ -257,3 +258,5 @@ void FindMaximumSum(int *arr, int low, int high, int* resStart, int* resEnd, int
 
 	return;
 }
+
+#endif

@@ -5,6 +5,9 @@
 	Edited by MS visual Studio 2015
 */
 
+#ifdef QuickSort
+
+
 #include "QuickSort.h"
 
 int main(void)
@@ -330,3 +333,6 @@ bool testArr::IsSortRight()
 
 	return true;
 }
+
+
+#endif

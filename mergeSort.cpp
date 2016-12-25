@@ -5,6 +5,7 @@
 	Edited By MS Visual Studio 2015.
 */
 
+#ifdef MergeSort
 
 #include "mergeSort.h"
 
@@ -163,7 +164,7 @@ testSet::testSet() : m_array(NULL), m_buffer(NULL), m_length(0)
 
 testSet::testSet(int* arr, int length)
 {
-	m_array = new int[length];
+	m_array  = new int[length];
 	m_buffer = new int[length];
 	
 	for (int i = 0; i < length; ++i) 
@@ -224,3 +225,6 @@ void testSet::test()
 	cout << endl;
 	return;
 }
+
+
+#endif
