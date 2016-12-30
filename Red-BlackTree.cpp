@@ -19,7 +19,7 @@
 /*
 	RightRotate / LeftRotate
 	각각 어떤 노드의 포인터를 받아서 Rotate시켜주는 함수.
-	
+
 		입력노드가 없다면 에러값 INVALID_INPUT을 반환.
 		각각 입력노드의 leftChild / RightChild가 없거나, 수행이 정상적으로 종료되면 PERFORM_WELL을 반환.
 
@@ -32,57 +32,61 @@
 		6. yNode의 rightChild를 xNode로 지정.
 		7. xNode와 원래 parent사이에 따라 yNode와 원래 parent사이의 관계를 지정.
 		end.
-		
+
 		LeftRotate
 		1. RightRotate와 방향과 x / y 노드를 반대로 진행.
 */
 
 
-STATE RedBlackTree::RightRotate(node_t* xNode)
+RedBlackTree::RedBlackTree()
 {
-	if (!xNode) return ERROR_INVALID_INPUT;
-	if (!xNode->leftChild) return PERFORM_WELL;
+	root = nullptr;
+	nilNode = new node_t;
+	nilNode->color = Black;
+	nilNode->data = INT_MIN;
+}
 
-	node_t* yNode = xNode->leftChild;
+STATE RedBlackTree::RightRotate(node_t* x)
+{
+	if (!x) return ERROR_INVALID_INPUT;
+	if (!x->leftChild) return PERFORM_WELL;
 
-	yNode->parent = xNode->parent;
-	xNode->parent = yNode;
+	node_t* y = x->leftChild;
 
-	if (yNode->rightChild)
-	{
-		xNode->leftChild = yNode->rightChild;
-		yNode->rightChild->parent = xNode;
-	}
-	yNode->rightChild = xNode;
+	y->parent = x->parent;
+	if (x->parent->data == INT_MIN) root = y;
+	else if (x->parent->rightChild = x) x->parent->rightChild = y;
+	else x->parent->leftChild = y;
+	
+	x->leftChild = y->rightChild;
+	if (y->rightChild) y->rightChild->parent = x;
 
-	if (!yNode->parent) this->root = yNode;
-	else if (yNode->parent->leftChild == xNode) yNode->parent->leftChild = yNode;
-	else yNode->parent->rightChild = yNode;
+	y->rightChild = x;
+	x->parent = y;
 
 	return PERFORM_WELL;
 
 }
 
-STATE RedBlackTree::LeftRotate(node_t* yNode)
+STATE RedBlackTree::LeftRotate(node_t* y)
 {
 
-	if (!yNode) return ERROR_INVALID_INPUT;
-	if (!yNode->rightChild) return PERFORM_WELL;
+	if (!y) return ERROR_INVALID_INPUT;
+	if (!y->rightChild) return PERFORM_WELL;
 
-	node_t* xNode = yNode->rightChild;
-	xNode->parent = yNode->parent;
-	yNode->parent = xNode;
+	node_t* x = y->rightChild;
+	
+	x->parent = y->parent;
+	if (x->parent->data == INT_MIN) root = x;
+	else if (x->parent->rightChild == y) x->parent->rightChild = x;
+	else x->parent->leftChild = x;
 
-	if (xNode->leftChild)
-	{
-		yNode->rightChild = xNode->leftChild;
-		xNode->leftChild->parent = xNode;
-	}
-	xNode->leftChild = yNode;
+	y->rightChild = x->leftChild;
+	if (x->leftChild) x->leftChild->parent = y;
 
-	if (!xNode->parent) this->root = xNode;
-	else if (xNode->parent->leftChild == yNode) xNode->parent->leftChild = xNode;
-	else xNode->parent->rightChild = xNode;
+	x->leftChild = y;
+	y->parent = x;
+	
 
 	return PERFORM_WELL;
 }
@@ -92,7 +96,7 @@ STATE RedBlackTree::LeftRotate(node_t* yNode)
 	InsertNode
 	RedBlackTree에 노드를 삽입해주는 함수.
 	인자로 int값 데이터를 받으면, Node_t를 할당해주고 알맞은 자리에 insert시켜준다.
-	
+
 	1. insert값 데이터를 갖는 Node_t 할당.
 		left/rightChild = NULL, color = Red, Data = inputInt.
 
@@ -129,50 +133,133 @@ STATE RedBlackTree::LeftRotate(node_t* yNode)
 
 	4. 이 전략을 가지고 최종 GrandParent의 color가 Red가 되는 3-2 case 1의 경우, 재귀적으로 GrandParent를 인자로하는 함수 실행.
 	5. root노드인 경우, 무조건 Black이어야하므로 Black으로 만들어 준 뒤, PERFORM_WELL 반환.
-			
+
 */
 
 int RedBlackTree::InsertNode(int inputData)
 {
-	node_t* inputNode;
-	inputNode->rightChild = NULL;
-	inputNode->leftChild = NULL;
+	node_t* inputNode = new node_t;
+	inputNode->rightChild = nilNode;
+	inputNode->leftChild = nilNode;
+	inputNode->parent = nilNode;
 	inputNode->color = Red;
 	inputNode->data = inputData;
 
-	if (!BSTinsert(inputNode))
+	if (BSTinsert(inputNode))
 	{
 		return ERROR_INNER_FUNCTION;
 	}
 
+	int retval = CheckCases(inputNode);
 
-	
+	return PERFORM_WELL;
 };
 
 int RedBlackTree::CheckCases(node_t* childNode)
 {
-	if (childNode->parent->color == Black) return PERFORM_WELL;
-	
+	// ChildNode가 root인 경우. ChildNode를 black으로 만들어 준 뒤, 종료.
+	if (childNode == root)
+	{
+		childNode->color = Black;
+		return PERFORM_WELL;
+	}
 
+	// ChildNode의 parent가 black일 경우 
+	if (childNode->parent->color == Black)
+	{
+		return PERFORM_WELL;
+	}
 
+	// ChildNode의 parent가 red일 경우, case분류를 위해 node를 지정해 준다.
+	node_t* parent = childNode->parent;
+	node_t* grandParent = parent->parent;
+	node_t* uncle;
+
+	if (grandParent->leftChild == parent)
+	{
+		uncle = grandParent->rightChild;
+	}
+	else
+	{
+		uncle = grandParent->leftChild;
+	}
+
+	// Case 1 : Uncle의 색이 Red인 경우.
+	if (uncle->color == Red)
+	{
+		grandParent->color = Red;
+		parent->color = Black;
+		uncle->color = Black;
+	}
+
+	// Case 2 : Parent가 GP의 left고, child가 Parent의 left인 경우.
+	// Case 3 : Parent가 GP의 left고, child가 Parent의 right인 경우.
+	else if (parent == grandParent->leftChild)
+	{
+		if (childNode == parent->rightChild)
+		{
+			LeftRotate(parent);
+		}
+
+		grandParent->color = Red;
+		parent->color = Black;
+		RightRotate(grandParent);
+
+		// 재귀적으로 호출.
+		CheckCases(grandParent);
+	}
+
+	// Case 4 : Parent가 GP의 right고, child가 Parent의 right인 경우.
+	// Case 5 : Parent가 GP의 right고, child가 Parent의 left인 경우.
+	else
+	{
+		if (childNode == parent->leftChild)
+		{
+			RightRotate(parent);
+		}
+
+		grandParent->color = Red;
+		parent->color = Black;
+		LeftRotate(grandParent);
+	}
+
+	root->color = Black;
+	return PERFORM_WELL;
 }
 
 int RedBlackTree::BSTinsert(node_t* inputNode)
 {
 	if (!inputNode) return ERROR_INVALID_INPUT;
-
-	node_t* currentNode = root;
-	node_t* beforeNode;
-
-	while (!currentNode)
+	if (!root)
 	{
-		beforeNode = currentNode;
-
-		if (currentNode->data < inputNode->data) currentNode = currentNode->rightChild;
-		else currentNode = currentNode->leftChild;
+		root = inputNode;
+		return PERFORM_WELL;
 	}
 
-	if (beforeNode->rightChild == currentNode)
+	node_t* currentNode = root;
+	node_t* beforeNode = root;
+
+	while (currentNode)
+	{
+		if (currentNode->data == INT_MIN)
+		{
+			break;
+		}
+		else
+		{
+			beforeNode = currentNode;
+			if (currentNode->data < inputNode->data)
+			{
+				currentNode = currentNode->rightChild;
+			}
+			else
+			{
+				currentNode = currentNode->leftChild;
+			}
+		}
+	}
+
+	if (beforeNode->data < inputNode->data)
 	{
 		beforeNode->rightChild = inputNode;
 	}
@@ -189,7 +276,7 @@ int RedBlackTree::BSTinsert(node_t* inputNode)
 int RedBlackTree::CalculateNodeAmount()
 {
 	if (!root) return 0;
-	
+
 	innerQueue->Push(root);
 	int nodeAmountNumber = 0;
 	node_t* receiveNodeWhichPoped;
@@ -199,17 +286,150 @@ int RedBlackTree::CalculateNodeAmount()
 	{
 		receiveNodeWhichPoped = innerQueue->Pop();
 		if (!receiveNodeWhichPoped->leftChild) innerQueue->Push(receiveNodeWhichPoped->leftChild);
-		if (!receiveNodeWhichPoped->rightChild) innerQueue->Push(receiveNodeWhichPoped->rightChild); 
+		if (!receiveNodeWhichPoped->rightChild) innerQueue->Push(receiveNodeWhichPoped->rightChild);
 		++nodeAmountNumber;
 	}
 
 	return nodeAmountNumber;
 }
 
+int RedBlackTree::DeleteNode(int deleteData)
+{
+	return 0;
+}
+
+int RedBlackTree::BSTdelete(int deleteData)
+{
+	if (!root) return 0;
+	
+
+
+	return 0;
+}
+
+void RedBlackTree::printInterface()
+{
+	int inputCommand = 1;
+
+	while (inputCommand != 0)
+	{
+		system("cls");
+
+		printMenu();
+		cin >> inputCommand;
+		
+		if (inputCommand == 1)
+		{
+			insertInterface();
+		}
+		else if (inputCommand == 2)
+		{
+			searchInterface();
+		}
+	}
+
+	return;
+}
+
+void RedBlackTree::printMenu()
+{
+	cout << "This is Red-Black Tree!" << endl;
+	cout << "1. insert node" << endl;
+	cout << "2. explore tree" << endl;
+	cout << "0. exit" << endl;
+	cout << "What do you want to do? : ";
+	
+	return;
+}
+
+void RedBlackTree::insertInterface()
+{
+	int inputData = 0;
+	cout << "Write the data which you want to insert : ";
+	cin >> inputData;
+
+	int retval = InsertNode(inputData);
+	if (retval == PERFORM_WELL)
+	{
+		cout << "Node Insert! (Press Enter)" << endl;
+		getchar();
+	}
+
+	return;
+}
+
+void RedBlackTree::searchInterface()
+{
+
+	node_t* currentNode = root;
+	node_t* beforeNode = root;
+	int inputArrow = 0;
+
+	while (inputArrow != DOWN)
+	{
+		system("cls");
+		if (!currentNode || currentNode->data == INT_MIN)
+		{
+			cout << "Oh, We are in the NULL now." << endl;
+			cout << "Press ARROW UP to go parent node." << endl;
+			cout << "Press ARROW DOWN to end explore." << endl;
+			inputArrow = _getch();
+
+			if (inputArrow == DOWN)
+			{
+				break;
+			}
+			else if (inputArrow == UP && currentNode != beforeNode)
+			{
+				currentNode = beforeNode;
+				beforeNode = currentNode->parent;
+			}
+		}
+		else
+		{
+			cout << "We are in the ";
+			if (currentNode->color == Red) cout << "Red";
+			else cout << "Black";
+			cout << "node." << endl;
+
+			cout << "The data is : " << currentNode->data << endl;
+			cout << endl;
+			
+			cout << "Wanna go to leftChild? Press ARROW LEFT." << endl;
+			cout << "Wanna go to rightChild? Press ARROW RIGHT." << endl;
+			cout << "Wanna go to parentChild? Press ARROW UP." << endl;
+			cout << "Press ARROW DOWN to end this explore." << endl;
+
+			inputArrow = _getch();
+			beforeNode = currentNode;
+
+			if (inputArrow == DOWN)
+			{
+				break;
+			}
+			else if (inputArrow == UP)
+			{
+				currentNode = currentNode->parent;
+			}
+			else if (inputArrow == LEFT)
+			{
+				currentNode = currentNode->leftChild;
+			}
+			else if (inputArrow == RIGHT)
+			{
+				currentNode = currentNode->rightChild;
+			}
+		}
+
+	}
+
+	return;
+}
+
 
 Queue::Queue()
 {
-	(node_t*) memset(queueArray, 0, MAX_QUEUE_NUM);
+	(node_t*)memset(queueArray, 0, MAX_QUEUE_NUM);
 }
 
 
@@ -262,7 +482,6 @@ bool Queue::IsQueueEmpty()
 	if (top == -1) return true;
 	else return false;
 }
-
 
 
 
